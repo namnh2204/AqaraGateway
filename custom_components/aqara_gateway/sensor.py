@@ -425,6 +425,11 @@ class GatewayKeyIDSensor(GatewaySensor):
         for key, value in data.items():
             if (key == self._attr or "unlock by" in key):
                 self._state = value
+                self.hass.bus.fire('aqara_gateway.lock_event', {
+                    'entity_id': self.entity_id,
+                    'type': 'key_id',
+                    'value': value
+                })
         self.async_write_ha_state()
 
 
@@ -449,6 +454,11 @@ class GatewayLockEventSensor(GatewaySensor):
                 notify = LOCK_NOTIFICATION[key]
                 self._state = notify.get(str(value), None) if notify.get(
                     str(value), None) else notify.get("default")
+                self.hass.bus.fire('aqara_gateway.lock_event', {
+                    'entity_id': self.entity_id,
+                    'type': 'lock_event',
+                    'value': self._state
+                })
 
         self.async_write_ha_state()
 
